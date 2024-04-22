@@ -1,0 +1,58 @@
+### CI-focused Tilt dev environment
+# Loading the external extensions 'helm_resource' and 'k8s_attach'.
+# 'helm_resource' helps to manage Helm chart resources, and 'k8s_attach' provides Kubernetes attachment service.
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+load('ext://k8s_attach', 'k8s_attach')
+
+# Updating settings with a custom Kubernetes update timeout.
+update_settings (k8s_upsert_timeout_secs = 90)
+
+### CI Deps Kustomize dir
+yaml = kustomize('.tilt/manifests/ci/deps')
+k8s_yaml(yaml)
+
+### CI Webhook Kustomize dir
+yaml = kustomize('k8s/ci/webhook')
+k8s_yaml(yaml)
+
+### CI Templates Kustomize dir
+yaml = kustomize('k8s/ci/workflow-templates')
+k8s_yaml(yaml)
+
+### Gitea
+yaml = kustomize('.tilt/manifests/gitea')
+k8s_yaml(yaml)
+# Creating a Kubernetes resource named 'gitea'.
+# In addition, enabling port forwarding and adding labels for better management.
+k8s_resource('gitea', labels=['gitea'], port_forwards=['3000'])
+
+# Running shell script to initialize and update 'gitea'.
+local_resource('init_gitea', cmd='.tilt/init_gitea.sh', resource_deps=['gitea'], labels=['gitea'])
+local_resource('update_gitea', cmd='.tilt/update_gitea.sh', trigger_mode = TRIGGER_MODE_MANUAL, auto_init = False, resource_deps=['gitea'], labels=['gitea'])
+
+### Argo Events & Workflows
+# Adding Helm repositories for Argo project.
+helm_repo('argo-repo', 'https://argoproj.github.io/argo-helm', labels=['Argo'])
+
+# Creating Helm resources for 'argo-events' and 'argo-workflows'
+helm_resource('argo-events',
+    'argo/argo-events',
+    resource_deps=['argo-repo'],
+    namespace='argo-events',
+    flags=['--version=2.4.3', '--create-namespace', '-f', 'k8s/values/argo-events.yaml'],
+    labels=['Argo'])
+
+helm_resource('argo-workflows',
+    'argo/argo-workflows',
+    resource_deps=['argo-repo'],
+    namespace='argo-workflows',
+    flags=['--version=0.40.14', '--create-namespace', '-f', 'k8s/values/argo-workflows.yaml'],
+    labels=['Argo'])
+
+# Provides link to Argo Workflows UI
+k8s_resource(workload='argo-workflows', port_forwards=2746)
+
+# Creating CI Containers
+# Building docker images for 'WorkflowTemplate'.
+k8s_kind ('WorkflowTemplate', image_json_path='{.spec.templates[*].container.image}')
+docker_build('go-build', './ci-containers/go-build', dockerfile = './ci-containers/go-build/Dockerfile')

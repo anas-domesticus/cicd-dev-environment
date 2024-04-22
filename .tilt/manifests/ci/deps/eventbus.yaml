@@ -1,0 +1,13 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: EventBus
+metadata:
+  name: default
+  namespace: workflows
+spec:
+  jetstream:
+    version: latest
+    replicas: 1
+    streamConfig: |
+      maxAge: 5m
+      replicas: 0

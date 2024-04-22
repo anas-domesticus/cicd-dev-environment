@@ -1,0 +1,8 @@
+controller:
+  workflowNamespaces:
+    - workflows
+workflow:
+  serviceAccount:
+    create: true
+server:
+  authModes: ["server"]

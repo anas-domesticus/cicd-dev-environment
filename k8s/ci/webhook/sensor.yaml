@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: webhook
+  namespace: workflows
+spec:
+  template:
+    serviceAccountName: argo-workflow
+  dependencies:
+    - name: webhook
+      eventSourceName: webhook
+      eventName: gitea
+  triggers:
+    - template:
+        name: argo-workflow-trigger
+        k8s:
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: go-build-
+              spec:
+                serviceAccountName: argo-workflow
+                workflowTemplateRef:
+                  name: go-build
+                arguments:
+                  parameters:
+                    - name: message
+                      # the value will get overridden by event payload from test-dep
+                      value: hello world
+                # Note that the templates section may not need if using a WorkflowTemplate
+          parameters:
+            - src:
+                dependencyName: webhook
+                dataKey: body
+              dest: spec.arguments.parameters.0.value

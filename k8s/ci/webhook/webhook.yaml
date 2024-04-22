@@ -1,0 +1,18 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: webhook
+  namespace: workflows
+spec:
+  serviceAccountName: argo-workflow
+  eventBusName: default
+  service:
+    ports:
+      - port: 12000
+        targetPort: 12000
+  webhook:
+    gitea:
+      port: "12000"
+      endpoint: /
+      method: POST

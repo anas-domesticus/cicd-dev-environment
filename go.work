@@ -1,0 +1,7 @@
+go 1.22.1
+
+use (
+	./.tilt
+	./ci-containers/go-build/ci-helper
+	./cmd/example
+)

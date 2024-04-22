@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: go-build
+  namespace: workflows
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: go-build
+  templates:
+    - name: go-build
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: go-build
+        command: ["ci-helper"]
