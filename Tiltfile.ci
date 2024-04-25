@@ -49,8 +49,12 @@ helm_resource('argo-workflows',
     flags=['--version=0.40.14', '--create-namespace', '-f', 'k8s/values/argo-workflows.yaml'],
     labels=['Argo'])
 
-# Provides link to Argo Workflows UI
-k8s_resource(workload='argo-workflows', port_forwards=2746)
+# Running local resource to serve UI for Argo workflows.
+local_resource("UI",
+    serve_cmd="kubectl port-forward -n argo-workflows svc/argo-workflows-server 2746:2746",
+    deps=['argo-workflows'],
+    labels=['Argo'],
+    links = ["http://localhost:2746"])
 
 # Creating CI Containers
 # Building docker images for 'WorkflowTemplate'.
