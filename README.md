@@ -40,9 +40,4 @@ Stay tuned for more updates!
 
 ## Getting Started
 
-To start using this project, please ensure you have the following tools installed:
-- Tilt
-- Ctlptl
-- Kind
-- A Go environment
-- 
+The easiest way to get started with this project will be to consult its blog post here -> https://anasdomesticus.hashnode.dev/revolutionising-ci-with-argo-events-workflows-tilt-faster-real-time-developer-feedback
