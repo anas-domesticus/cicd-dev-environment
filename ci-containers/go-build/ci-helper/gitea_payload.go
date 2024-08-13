@@ -3,74 +3,15 @@ package main
 import "time"
 
 type GiteaPayload struct {
-	Ref        string `json:"ref"`
-	Before     string `json:"before"`
-	After      string `json:"after"`
-	CompareUrl string `json:"compare_url"`
-	Commits    []struct {
-		Id      string `json:"id"`
-		Message string `json:"message"`
-		Url     string `json:"url"`
-		Author  struct {
-			Name     string `json:"name"`
-			Email    string `json:"email"`
-			Username string `json:"username"`
-		} `json:"author"`
-		Committer struct {
-			Name     string `json:"name"`
-			Email    string `json:"email"`
-			Username string `json:"username"`
-		} `json:"committer"`
-		Verification interface{}   `json:"verification"`
-		Timestamp    time.Time     `json:"timestamp"`
-		Added        []string      `json:"added"`
-		Removed      []interface{} `json:"removed"`
-		Modified     []interface{} `json:"modified"`
-	} `json:"commits"`
-	HeadCommit struct {
-		Id      string `json:"id"`
-		Message string `json:"message"`
-		Url     string `json:"url"`
-		Author  struct {
-			Name     string `json:"name"`
-			Email    string `json:"email"`
-			Username string `json:"username"`
-		} `json:"author"`
-		Committer struct {
-			Name     string `json:"name"`
-			Email    string `json:"email"`
-			Username string `json:"username"`
-		} `json:"committer"`
-		Verification interface{}   `json:"verification"`
-		Timestamp    time.Time     `json:"timestamp"`
-		Added        []string      `json:"added"`
-		Removed      []interface{} `json:"removed"`
-		Modified     []interface{} `json:"modified"`
-	} `json:"head_commit"`
+	Ref        string        `json:"ref"`
+	Before     string        `json:"before"`
+	After      string        `json:"after"`
+	CompareUrl string        `json:"compare_url"`
+	Commits    []GiteaCommit `json:"commits"`
+	HeadCommit GiteaCommit   `json:"head_commit"`
 	Repository struct {
-		Id    int `json:"id"`
-		Owner struct {
-			Id                int       `json:"id"`
-			Login             string    `json:"login"`
-			FullName          string    `json:"full_name"`
-			Email             string    `json:"email"`
-			AvatarUrl         string    `json:"avatar_url"`
-			Language          string    `json:"language"`
-			IsAdmin           bool      `json:"is_admin"`
-			LastLogin         time.Time `json:"last_login"`
-			Created           time.Time `json:"created"`
-			Restricted        bool      `json:"restricted"`
-			Active            bool      `json:"active"`
-			ProhibitLogin     bool      `json:"prohibit_login"`
-			Location          string    `json:"location"`
-			Website           string    `json:"website"`
-			Description       string    `json:"description"`
-			Visibility        string    `json:"visibility"`
-			FollowersCount    int       `json:"followers_count"`
-			FollowingCount    int       `json:"following_count"`
-			StarredReposCount int       `json:"starred_repos_count"`
-			Username          string    `json:"username"`
-		} `json:"owner"`
+		Id              int         `json:"id"`
+		Owner           GiteaUser   `json:"owner"`
 		Name            string      `json:"name"`
 		FullName        string      `json:"full_name"`
 		Description     string      `json:"description"`
@@ -122,48 +63,50 @@ type GiteaPayload struct {
 		MirrorUpdated             time.Time   `json:"mirror_updated"`
 		RepoTransfer              interface{} `json:"repo_transfer"`
 	} `json:"repository"`
-	Pusher struct {
-		Id                int       `json:"id"`
-		Login             string    `json:"login"`
-		FullName          string    `json:"full_name"`
-		Email             string    `json:"email"`
-		AvatarUrl         string    `json:"avatar_url"`
-		Language          string    `json:"language"`
-		IsAdmin           bool      `json:"is_admin"`
-		LastLogin         time.Time `json:"last_login"`
-		Created           time.Time `json:"created"`
-		Restricted        bool      `json:"restricted"`
-		Active            bool      `json:"active"`
-		ProhibitLogin     bool      `json:"prohibit_login"`
-		Location          string    `json:"location"`
-		Website           string    `json:"website"`
-		Description       string    `json:"description"`
-		Visibility        string    `json:"visibility"`
-		FollowersCount    int       `json:"followers_count"`
-		FollowingCount    int       `json:"following_count"`
-		StarredReposCount int       `json:"starred_repos_count"`
-		Username          string    `json:"username"`
-	} `json:"pusher"`
-	Sender struct {
-		Id                int       `json:"id"`
-		Login             string    `json:"login"`
-		FullName          string    `json:"full_name"`
-		Email             string    `json:"email"`
-		AvatarUrl         string    `json:"avatar_url"`
-		Language          string    `json:"language"`
-		IsAdmin           bool      `json:"is_admin"`
-		LastLogin         time.Time `json:"last_login"`
-		Created           time.Time `json:"created"`
-		Restricted        bool      `json:"restricted"`
-		Active            bool      `json:"active"`
-		ProhibitLogin     bool      `json:"prohibit_login"`
-		Location          string    `json:"location"`
-		Website           string    `json:"website"`
-		Description       string    `json:"description"`
-		Visibility        string    `json:"visibility"`
-		FollowersCount    int       `json:"followers_count"`
-		FollowingCount    int       `json:"following_count"`
-		StarredReposCount int       `json:"starred_repos_count"`
-		Username          string    `json:"username"`
-	} `json:"sender"`
+	Pusher GiteaUser `json:"pusher"`
+	Sender GiteaUser `json:"sender"`
+}
+
+type GiteaCommit struct {
+	Id      string `json:"id"`
+	Message string `json:"message"`
+	Url     string `json:"url"`
+	Author  struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Username string `json:"username"`
+	} `json:"author"`
+	Committer struct {
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Username string `json:"username"`
+	} `json:"committer"`
+	Verification interface{}   `json:"verification"`
+	Timestamp    time.Time     `json:"timestamp"`
+	Added        []string      `json:"added"`
+	Removed      []interface{} `json:"removed"`
+	Modified     []interface{} `json:"modified"`
+}
+
+type GiteaUser struct {
+	Id                int       `json:"id"`
+	Login             string    `json:"login"`
+	FullName          string    `json:"full_name"`
+	Email             string    `json:"email"`
+	AvatarUrl         string    `json:"avatar_url"`
+	Language          string    `json:"language"`
+	IsAdmin           bool      `json:"is_admin"`
+	LastLogin         time.Time `json:"last_login"`
+	Created           time.Time `json:"created"`
+	Restricted        bool      `json:"restricted"`
+	Active            bool      `json:"active"`
+	ProhibitLogin     bool      `json:"prohibit_login"`
+	Location          string    `json:"location"`
+	Website           string    `json:"website"`
+	Description       string    `json:"description"`
+	Visibility        string    `json:"visibility"`
+	FollowersCount    int       `json:"followers_count"`
+	FollowingCount    int       `json:"following_count"`
+	StarredReposCount int       `json:"starred_repos_count"`
+	Username          string    `json:"username"`
 }
