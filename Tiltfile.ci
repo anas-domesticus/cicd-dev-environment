@@ -36,14 +36,14 @@ helm_repo('argo-repo', 'https://argoproj.github.io/argo-helm', labels=['Argo'])
 
 # Creating Helm resources for 'argo-events' and 'argo-workflows'
 helm_resource('argo-events',
-    'argo/argo-events',
+    'argo-repo/argo-events',
     resource_deps=['argo-repo'],
     namespace='argo-events',
     flags=['--version=2.4.3', '--create-namespace', '-f', 'k8s/values/argo-events.yaml'],
     labels=['Argo'])
 
 helm_resource('argo-workflows',
-    'argo/argo-workflows',
+    'argo-repo/argo-workflows',
     resource_deps=['argo-repo'],
     namespace='argo-workflows',
     flags=['--version=0.40.14', '--create-namespace', '-f', 'k8s/values/argo-workflows.yaml'],
