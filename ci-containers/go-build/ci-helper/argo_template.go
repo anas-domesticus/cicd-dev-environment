@@ -23,6 +23,14 @@ type ArgoParameter struct {
 	Value string `json:"value"`
 }
 
+func (at *ArgoTemplate) ParametersToEnvVars() map[string]string {
+	envVars := make(map[string]string)
+	for _, param := range at.Inputs.Parameters {
+		envVars[param.Name] = param.Value
+	}
+	return envVars
+}
+
 func (ap *ArgoParameter) IsPayload() bool {
 	return ap.Name == "message"
 }

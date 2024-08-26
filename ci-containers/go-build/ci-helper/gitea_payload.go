@@ -1,6 +1,8 @@
 package main
 
-import "time"
+import (
+	"time"
+)
 
 type GiteaPayload struct {
 	Ref        string        `json:"ref"`
