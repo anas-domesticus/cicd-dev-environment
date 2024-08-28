@@ -19,6 +19,10 @@ k8s_yaml(yaml)
 yaml = kustomize('k8s/ci/workflow-templates')
 k8s_yaml(yaml)
 
+### Dagger Kustomize Dir
+yaml = kustomize('k8s/ci/dagger')
+k8s_yaml(yaml)
+
 ### Gitea
 yaml = kustomize('.tilt/manifests/gitea')
 k8s_yaml(yaml)

@@ -1,4 +1,4 @@
-package main
+package types
 
 type ArgoTemplate struct {
 	Name   string `json:"name"`

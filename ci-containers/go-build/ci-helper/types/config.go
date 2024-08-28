@@ -1,4 +1,4 @@
-package main
+package types
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ type Config struct {
 }
 
 // LoadConfig populates the Config struct with environment variables
-func LoadConfig() (*Config, error) {
+func LoadConfigFromEnvVars() (*Config, error) {
 	argoTemplate := ArgoTemplate{}
 	err := json.Unmarshal([]byte(os.Getenv("ARGO_TEMPLATE")), &argoTemplate)
 	if err != nil {

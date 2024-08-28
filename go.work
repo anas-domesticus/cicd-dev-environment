@@ -1,7 +1,8 @@
-go 1.22.1
+go 1.22.5
 
 use (
 	./.tilt
 	./ci-containers/go-build/ci-helper
 	./cmd/example
+	./dagger
 )
