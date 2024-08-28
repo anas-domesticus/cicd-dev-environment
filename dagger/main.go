@@ -10,11 +10,6 @@ import (
 
 type CicdDevEnvironment struct{}
 
-// Returns a container that echoes whatever string argument is provided
-func (m *CicdDevEnvironment) ContainerEcho(stringArg string) *dagger.Container {
-	return dag.Container().From("alpine:latest").WithExec([]string{"echo", stringArg})
-}
-
 // CI Entrypoint
 func (m *CicdDevEnvironment) Ci(source *dagger.Directory) (string, error) {
 	cfg, err := LoadConfigFromFile(source.File("argo.json"))
@@ -30,6 +25,9 @@ func (m *CicdDevEnvironment) Ci(source *dagger.Directory) (string, error) {
 	for i := range payload.Commits {
 		fmt.Printf("- %s\n", payload.Commits[i].Message)
 	}
+
+	// This is where we would implement decision-making regarding what we do
+	// for this example, we're just going to build the example app
 
 	return m.Publish(context.Background(), source, "example")
 }
