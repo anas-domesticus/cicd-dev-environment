@@ -2,3 +2,4 @@ resources:
   - ns.yaml
   - eventbus.yaml
   - rbac.yaml
+  - dagger.yaml

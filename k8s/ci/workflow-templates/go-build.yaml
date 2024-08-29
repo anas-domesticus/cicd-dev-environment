@@ -1,3 +1,5 @@
+
+---
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
@@ -6,6 +8,13 @@ metadata:
 spec:
   serviceAccountName: argo-workflow
   entrypoint: go-build
+  volumes:
+    - name: dagger-conn
+      hostPath:
+        path: /var/run/dagger
+#    - name: gomod-cache
+#      persistentVolumeClaim:
+#        claimName: gomod-cache
   templates:
     - name: go-build
       inputs:
@@ -14,3 +23,11 @@ spec:
       container:
         image: go-build
         command: ["ci-helper"]
+        env:
+          - name: "_EXPERIMENTAL_DAGGER_RUNNER_HOST"
+            value: "unix:///var/run/dagger/buildkitd.sock"
+        volumeMounts:
+          - name: dagger-conn
+            mountPath: /var/run/dagger
+#          - name: gomod-cache
+#            mountPath: /go/pkg/mod

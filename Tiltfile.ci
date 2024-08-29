@@ -1,4 +1,5 @@
 ### CI-focused Tilt dev environment
+
 # Loading the external extensions 'helm_resource' and 'k8s_attach'.
 # 'helm_resource' helps to manage Helm chart resources, and 'k8s_attach' provides Kubernetes attachment service.
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
@@ -8,7 +9,7 @@ load('ext://k8s_attach', 'k8s_attach')
 update_settings (k8s_upsert_timeout_secs = 90)
 
 ### CI Deps Kustomize dir
-yaml = kustomize('.tilt/manifests/ci/deps')
+yaml = kustomize('k8s/deps/ci')
 k8s_yaml(yaml)
 
 ### CI Webhook Kustomize dir
@@ -20,7 +21,7 @@ yaml = kustomize('k8s/ci/workflow-templates')
 k8s_yaml(yaml)
 
 ### Gitea
-yaml = kustomize('.tilt/manifests/gitea')
+yaml = kustomize('k8s/deps/gitea')
 k8s_yaml(yaml)
 # Creating a Kubernetes resource named 'gitea'.
 # In addition, enabling port forwarding and adding labels for better management.
@@ -36,14 +37,14 @@ helm_repo('argo-repo', 'https://argoproj.github.io/argo-helm', labels=['Argo'])
 
 # Creating Helm resources for 'argo-events' and 'argo-workflows'
 helm_resource('argo-events',
-    'argo/argo-events',
+    'argo-repo/argo-events',
     resource_deps=['argo-repo'],
     namespace='argo-events',
     flags=['--version=2.4.3', '--create-namespace', '-f', 'k8s/values/argo-events.yaml'],
     labels=['Argo'])
 
 helm_resource('argo-workflows',
-    'argo/argo-workflows',
+    'argo-repo/argo-workflows',
     resource_deps=['argo-repo'],
     namespace='argo-workflows',
     flags=['--version=0.40.14', '--create-namespace', '-f', 'k8s/values/argo-workflows.yaml'],
