@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+sleep 5
+
 startdir=$(pwd)
 tmpdir=$(mktemp -d)
 mkdir -p .tilt/tmp

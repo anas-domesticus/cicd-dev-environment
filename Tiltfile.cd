@@ -1,0 +1,49 @@
+### CD-focused Tilt dev environment
+
+# Loading the external extensions 'helm_resource' and 'k8s_attach'.
+# 'helm_resource' helps to manage Helm chart resources, and 'k8s_attach' provides Kubernetes attachment service.
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+load('ext://k8s_attach', 'k8s_attach')
+
+# Updating settings with a custom Kubernetes update timeout.
+update_settings (k8s_upsert_timeout_secs = 90)
+
+### Gitea
+yaml = kustomize('k8s/deps/gitea')
+k8s_yaml(yaml)
+# Creating a Kubernetes resource named 'gitea'.
+# In addition, enabling port forwarding and adding labels for better management.
+k8s_resource('gitea', labels=['gitea'], port_forwards=['3000'])
+
+# Running shell script to initialize and update 'gitea'.
+local_resource('init_gitea', cmd='.tilt/init_gitea.sh', resource_deps=['gitea'], labels=['gitea'])
+local_resource('update_gitea', cmd='.tilt/update_gitea.sh', trigger_mode = TRIGGER_MODE_MANUAL, auto_init = False, resource_deps=['gitea'], labels=['gitea'])
+
+# Install ArgoCD
+yaml = kustomize('k8s/deps/cd')
+k8s_yaml(yaml)
+# Creating a Kubernetes resource named 'argocd'.
+
+k8s_resource('argocd-server', labels=['argocd'], port_forwards=['8080'])
+k8s_resource('argocd-application-controller', labels=['argocd'])
+k8s_resource('argocd-repo-server', labels=['argocd'])
+k8s_resource('argocd-redis', labels=['argocd'])
+k8s_resource('argocd-notifications-controller', labels=['argocd'])
+k8s_resource('argocd-dex-server', labels=['argocd'])
+k8s_resource('argocd-applicationset-controller', labels=['argocd'])
+
+k8s_kind('Application')
+k8s_resource('example', labels=['argocd'], resource_deps=['argocd-server'])
+
+# Adds ArgoCD App
+yaml = kustomize('k8s/overlays/dev/cd')
+k8s_yaml(yaml)
+
+
+# Example app image
+update_settings(suppress_unused_image_warnings=["example"])
+custom_build(
+    'example',
+    'go run .tilt/update_image.go --image=$EXPECTED_REF && docker build -t $EXPECTED_REF -f cmd/example/Dockerfile cmd/example && docker push $EXPECTED_REF',
+    ['./cmd/example'],
+    )
