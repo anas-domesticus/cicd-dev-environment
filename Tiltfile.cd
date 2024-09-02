@@ -39,11 +39,9 @@ k8s_resource('example', labels=['argocd'], resource_deps=['argocd-server'])
 yaml = kustomize('k8s/overlays/dev/cd')
 k8s_yaml(yaml)
 
-
 # Example app image
-update_settings(suppress_unused_image_warnings=["example"])
-custom_build(
-    'example',
-    'go run .tilt/update_image.go --image=$EXPECTED_REF && docker build -t $EXPECTED_REF -f cmd/example/Dockerfile cmd/example && docker push $EXPECTED_REF',
-    ['./cmd/example'],
-    )
+local_resource(
+  'example-container', 'export LOCAL_REGISTRY=$(ctlptl get -o json | jq -r \'.items[] | select(.registry == "ctlptl-registry") | .status.localRegistryHosting.host\') && export TAG=$(go run .tilt/update_image.go --image=example) && docker build -f ./cmd/example/Dockerfile -t $LOCAL_REGISTRY/example:$TAG ./cmd/example && docker push $LOCAL_REGISTRY/example:$TAG',
+  deps=['./cmd/example/'],
+  labels=['obj-endpoint-containers']
+)

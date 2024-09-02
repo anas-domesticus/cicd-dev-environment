@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
-	"strings"
 	"text/template"
 )
 
@@ -16,22 +16,12 @@ type ImageComponents struct {
 	Tag       string
 }
 
-func parseImageReference(imageRef string) ImageComponents {
+func createImageReference(imageRef string) ImageComponents {
 	var components ImageComponents
 
-	parts := strings.Split(imageRef, "/")
-	if len(parts) > 1 {
-		components.Host = parts[0]
-		imageRef = parts[1]
-	}
-
-	imageAndTag := strings.Split(imageRef, ":")
-	components.ImageName = imageAndTag[0]
-	if len(imageAndTag) > 1 {
-		components.Tag = imageAndTag[1]
-	} else {
-		components.Tag = "latest" // Default tag
-	}
+	components.Host = os.Getenv("LOCAL_REGISTRY")
+	components.ImageName = imageRef
+	components.Tag = getRandomString(12)
 
 	return components
 }
@@ -49,7 +39,7 @@ func main() {
 	}
 
 	// Parse the image reference
-	components := parseImageReference(*imageRefFlag)
+	components := createImageReference(*imageRefFlag)
 
 	// Load the existing JSON file or create a new one if it doesn't exist.
 	imgFilename := ".tilt/.images.json"
@@ -94,5 +84,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Print(components.Tag)
+}
 
+func getRandomString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
 }
