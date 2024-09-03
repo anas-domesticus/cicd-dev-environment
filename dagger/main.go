@@ -35,7 +35,7 @@ func (m *CicdDevEnvironment) Ci(source *dagger.Directory) (string, error) {
 // Return the result of running unit tests
 func (m *CicdDevEnvironment) Test(ctx context.Context, source *dagger.Directory, app string) (string, error) {
 	return m.BuildEnv(source).
-		WithExec([]string{"go", "test", appToModule(app)}).
+		WithExec([]string{"go", "test", "-v", appToModule(app)}).
 		Stdout(ctx)
 }
 
