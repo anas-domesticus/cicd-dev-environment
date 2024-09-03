@@ -1,0 +1,6 @@
+{
+  "name": "cicd-dev-environment",
+  "sdk": "go",
+  "source": "dagger",
+  "engineVersion": "v0.12.5"
+}
